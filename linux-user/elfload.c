@@ -20,6 +20,8 @@
 
 #define ELF_OSABI   ELFOSABI_SYSV
 
+#include "../../../config.h"
+#include "../../patches/afl-qemu-timewarp.h"
 extern abi_ulong afl_entry_point, afl_start_code, afl_end_code;
 
 /* from personality.h */
@@ -2087,7 +2089,17 @@ static void load_elf_image(const char *image_name, int image_fd,
     info->brk = 0;
     info->elf_flags = ehdr->e_flags;
 
-    if (!afl_entry_point) afl_entry_point = info->entry;
+    if (!tw_stage && getenv("TIMEWARP_MODE")) {
+
+        tw_stage = TW_STDIO;
+
+        /* Try to tell the parent we are alive */
+        if (!write(FORKSRV_FD + 1, "up!", 4)) exit(12);
+
+    }
+
+    // In case we run in timewarp mode, we want to run free until SIGUSR2 sets the entry point later.
+    if (!afl_entry_point && tw_stage != TW_STDIO) afl_entry_point = info->entry;
 
     for (i = 0; i < ehdr->e_phnum; i++) {
         struct elf_phdr *eppnt = phdr + i;

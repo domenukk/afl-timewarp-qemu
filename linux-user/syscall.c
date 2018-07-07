@@ -17,6 +17,7 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 #define _ATFILE_SOURCE
+#include "../../patches/afl-qemu-timewarp.h"
 #include "qemu/osdep.h"
 #include "qemu/cutils.h"
 #include "qemu/path.h"
@@ -7705,6 +7706,9 @@ abi_long do_syscall(void *cpu_env, int num, abi_long arg1,
     struct statfs stfs;
     void *p;
 
+//TODO #ifdef TIMEWARP_MODE
+    tw_in_syscall = 1;
+
 #if defined(DEBUG_ERESTARTSYS)
     /* Debug-only code for exercising the syscall-restart code paths
      * in the per-architecture cpu main loops: restart every syscall
@@ -7782,6 +7786,7 @@ abi_long do_syscall(void *cpu_env, int num, abi_long arg1,
                 ret = fd_trans_host_to_target_data(arg1)(p, ret);
             }
             unlock_user(p, arg2, ret);
+
         }
         break;
     case TARGET_NR_write:
@@ -12405,6 +12410,19 @@ fail:
 #ifdef DEBUG
     gemu_log(" = " TARGET_ABI_FMT_ld "\n", ret);
 #endif
+
+    //TODO return -TARGET_ERESTARTSYS TIMEWARP_MODE
+    //gemu_log("\nSyscall finished, ret=%d, call_id=%ld, args=%ld,%ld,%ld,%ld,%ld,%ld,%ld\n",
+    //         num, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+
+    if (!tw_in_syscall) { //TODO: ? &&  ret <= 0) {
+        // Something happened in between. Let's retry the syscall.
+        // This might break for some syscalls but needs to happen for most read() syscalls.
+        // We might need a way to distinguish between them.
+        gemu_log("Retrying syscall %d\n", num);
+        return -TARGET_ERESTARTSYS;
+    }
+
     if(do_strace)
         print_syscall_ret(num, ret);
     trace_guest_user_syscall_ret(cpu, num, ret);
