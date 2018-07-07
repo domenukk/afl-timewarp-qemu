@@ -96,11 +96,11 @@ make || exit 1
 
 echo "[+] Build process successful!"
 
-echo "[*] Copying binary..."
+#echo "[*] Copying binary..."
 
 #cp -f "${CPU_TARGET}-linux-user/qemu-${CPU_TARGET}" "../../afl-qemu-trace" || exit 1
 
-cd ..
+#cd ..
 ls -l ../afl-qemu-trace || exit 1
 
 echo "[+] Successfully created '../afl-qemu-trace'."
