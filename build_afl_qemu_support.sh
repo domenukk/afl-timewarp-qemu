@@ -81,8 +81,6 @@ ORIG_CPU_TARGET="$CPU_TARGET"
 test "$CPU_TARGET" = "" && CPU_TARGET="`uname -m`"
 test "$CPU_TARGET" = "i686" && CPU_TARGET="i386"
 
-cd qemu-$VERSION || exit 1
-
 # --enable-pie seems to give a couple of exec's a second performance
 # improvement, much to my surprise. Not sure how universal this is..
 

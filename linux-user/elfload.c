@@ -21,7 +21,7 @@
 #define ELF_OSABI   ELFOSABI_SYSV
 
 #include "../../../config.h"
-#include "../../patches/afl-qemu-timewarp.h"
+#include "afl-qemu-timewarp.h"
 extern abi_ulong afl_entry_point, afl_start_code, afl_end_code;
 
 /* from personality.h */

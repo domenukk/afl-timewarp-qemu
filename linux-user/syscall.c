@@ -17,7 +17,7 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 #define _ATFILE_SOURCE
-#include "../../patches/afl-qemu-timewarp.h"
+#include "afl-qemu-timewarp.h"
 #include "qemu/osdep.h"
 #include "qemu/cutils.h"
 #include "qemu/path.h"

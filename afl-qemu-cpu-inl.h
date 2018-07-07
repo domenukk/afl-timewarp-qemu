@@ -29,11 +29,11 @@
 #include <sys/shm.h>
 #include "../../config.h"
 
-#include "../qemu-2.10.0/linux-user/qemu.h"
+#include "linux-user/qemu.h"
 
 #define TIMEWARP_MODE 1
 
-#include "./afl-qemu-timewarp.h"
+#include "afl-qemu-timewarp.h"
 
 /***************************
  * VARIOUS AUXILIARY STUFF *

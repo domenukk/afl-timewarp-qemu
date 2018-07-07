@@ -36,7 +36,7 @@
 #include "sysemu/cpus.h"
 #include "sysemu/replay.h"
 
-#include "../patches/afl-qemu-cpu-inl.h"
+#include "afl-qemu-cpu-inl.h"
 
 /* -icount align implementation. */
 
