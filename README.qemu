@@ -22,7 +22,7 @@ The idea and much of the implementation comes from Andrew Griffiths.
 -------------
 
 The feature is implemented with a fairly simple patch to QEMU 2.10.0. The
-simplest way to build it is to run ./build_qemu_support.sh. The script will
+simplest way to build it is to run ./build_afl_qemu_support.sh. The script will
 download, configure, and compile the QEMU binary for you.
 
 QEMU is a big project, so this will take a while, and you may have to
@@ -37,7 +37,7 @@ Note that QEMU requires a generous memory limit to run; somewhere around
 more complex programs. The default -m limit will be automatically bumped up
 to 200 MB when specifying -Q to afl-fuzz; be careful when overriding this.
 
-In principle, if you set CPU_TARGET before calling ./build_qemu_support.sh,
+In principle, if you set CPU_TARGET before calling ./build_afl_qemu_support.sh,
 you should get a build capable of running non-native binaries (say, you
 can try CPU_TARGET=arm). This is also necessary for running 32-bit binaries
 on a 64-bit system (CPU_TARGET=i386).
