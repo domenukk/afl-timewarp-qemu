@@ -101,6 +101,9 @@ echo "[+] Build process successful!"
 #cp -f "${CPU_TARGET}-linux-user/qemu-${CPU_TARGET}" "../../afl-qemu-trace" || exit 1
 
 #cd ..
+
+ln -s "${PWD}/${CPU_TARGET}-linux-user/qemu-${CPU_TARGET}" "../afl-qemu-trace"
+
 ls -l ../afl-qemu-trace || exit 1
 
 echo "[+] Successfully created '../afl-qemu-trace'."
