@@ -74,18 +74,20 @@ if echo "$CC" | grep -qF /afl-; then
 fi
 
 echo "[+] All checks passed!"
-echo "[*] Configuring QEMU for $CPU_TARGET..."
 
 ORIG_CPU_TARGET="$CPU_TARGET"
 
 test "$CPU_TARGET" = "" && CPU_TARGET="`uname -m`"
 test "$CPU_TARGET" = "i686" && CPU_TARGET="i386"
 
+echo "[*] Configuring QEMU for $CPU_TARGET..."
+
 # --enable-pie seems to give a couple of exec's a second performance
 # improvement, much to my surprise. Not sure how universal this is..
 
 CFLAGS="-O3 -ggdb" ./configure --disable-system \
   --enable-linux-user --disable-gtk --disable-sdl --disable-vnc \
+  --disable-werror \
   --target-list="${CPU_TARGET}-linux-user" --python=$(which python2) --enable-pie --enable-kvm || exit 1
 
 echo "[+] Configuration complete."
@@ -114,7 +116,7 @@ if [ "$ORIG_CPU_TARGET" = "" ]; then
 
   cd ..
 
-  make >/dev/null || exit 1
+  make 1>/dev/null || exit 1
 
   gcc test-instr.c -o test-instr || exit 1
 

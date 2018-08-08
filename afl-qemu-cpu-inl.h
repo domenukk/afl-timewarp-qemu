@@ -115,7 +115,7 @@ struct afl_tsl {
 
 /* Some forward decls: */
 
-TranslationBlock *tb_htable_lookup(CPUState*, target_ulong, target_ulong, uint32_t);
+// TranslationBlock *tb_htable_lookup(CPUState *cpu, target_ulong pc, target_ulong cs_base, uint32_t flags);
 static inline TranslationBlock *tb_find(CPUState*, TranslationBlock*, int);
 
 /*************************
