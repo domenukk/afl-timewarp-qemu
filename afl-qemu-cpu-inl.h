@@ -197,7 +197,7 @@ static void afl_forkserver(CPUState *cpu) {
 
   if (tw_stage == TW_FUZZ) {
 
-    gemu_log("Timewarping forkserver <3\n");
+    gemu_log("Timewarping forkserver, ready for action.\n");
 
     /* Store fd0 so we can reuse it later for timewarping */
     if (dup2(0, STDIN_FD) < 0) exit(10);
@@ -231,7 +231,7 @@ static void afl_forkserver(CPUState *cpu) {
     if (pipe(t_fd) || dup2(t_fd[1], TSL_FD) < 0) exit(3);
     close(t_fd[1]);
 
-    gemu_log("FORKING\n");
+    //gemu_log("FORKING\n");
 
     child_pid = fork();
     if (child_pid < 0) exit(4);

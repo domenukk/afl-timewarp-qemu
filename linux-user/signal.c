@@ -26,6 +26,13 @@
 #include "target_signal.h"
 #include "trace.h"
 
+//#ifdef TIMEWARP_MODE
+
+#include <stdio.h>
+#include "../afl-qemu-timewarp.h"
+
+//#endif /* TIMEWARP_MODE */
+
 static struct target_sigaltstack target_sigaltstack_used = {
     .ss_sp = 0,
     .ss_size = 0,
@@ -646,6 +653,57 @@ static void host_signal_handler(int host_signum, siginfo_t *info,
         if (cpu_signal_handler(host_signum, info, puc))
             return;
     }
+
+    //TODO: Remove
+    gemu_log("entered sighandler. sig: %d (expected %d), stage: %d (expected %d)", host_signum, TW_SIGNAL, tw_stage, TW_STDIO);
+    if (tw_stage == TW_STDIO && host_signum == TW_SIGNAL) {
+        // In stdio-mode, SIGUSR2 means: start fuzzing.
+        gemu_log("Will start fuzzing."); //TODO: Remove
+        tw_stage = TW_FUZZ;
+        tw_exec = 1;
+
+        tw_in_syscall = 0;
+
+        rewind_if_in_safe_syscall(puc);
+
+        return;
+    }
+
+      /** TODO: do we need to do this manually?
+        fork();
+        if (!fork) {
+            gemu_log("Fork failed");
+            exit(1);
+        }
+        if (!child) {
+            // We're the child and, therefore, should start fuzzing.
+
+            return;
+        } else {}
+        */
+
+    /* TODO
+
+#ifdef TIMEWARP_MODE
+    if (tw_stage == 1 && host_signum == TIMEWARP_SIGNAL) {
+        // TODO: read();
+        int child_id = fork();
+        if (child_id < 0)
+            // something broke.
+            fprintf(stderr, "QEMU-Timewarp-Tracer: Fork failed. This is not a bug in the app.");
+            exit(99);
+        }
+        if (!child_id) {
+            timewarp_stage = 1;
+        } else {
+            // We're the child. Do our thing.
+
+        }
+        return;
+    }
+
+     */
+//#endif /* TIMEWARP_MODE */
 
     /* get target signal number */
     sig = host_to_target_signal(host_signum);
@@ -6556,12 +6614,41 @@ long do_rt_sigreturn(CPUArchState *env)
 static void handle_pending_signal(CPUArchState *cpu_env, int sig,
                                   struct emulated_sigtable *k)
 {
+
     CPUState *cpu = ENV_GET_CPU(cpu_env);
     abi_ulong handler;
     sigset_t set;
     target_sigset_t target_old_set;
     struct target_sigaction *sa;
     TaskState *ts = cpu->opaque;
+
+//#ifdef TIMEWARP_MODE
+/*
+    gemu_log("entered sighandler. sig: %d (expected %d), stage: %d (expected %d)", sig, TW_SIGNAL, tw_stage, TW_STDIO);
+    if (tw_stage == TW_STDIO && sig == TW_SIGNAL) {
+        // In stdio-mode, SIGUSR2 means: start fuzzing.
+        gemu_log("Will start fuzzing."); //TODO: Remove
+        tw_stage = TW_FUZZ;
+        tw_exec = 1;
+
+        // We don't want any signal to be forwarded to the target application.
+        sig = 0;
+    }*/
+      /** TODO: do we need to do this manually?
+        fork();
+        if (!fork) {
+            gemu_log("Fork failed");
+            exit(1);
+        }
+        if (!child) {
+            // We're the child and, therefore, should start fuzzing.
+
+            return;
+        } else {}
+        }
+        */
+
+//#endif /* TIMEWARP_MODE */
 
     trace_user_handle_signal(cpu_env, sig);
     /* dequeue signal */
